@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かたかな・ななな - たのしくおんどく</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Klee+One:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Klee One', 'BIZ UDPGothic', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            background-color: #f0f9ff;
+        }
+        .textbook-font {
+            font-family: 'Klee One', 'BIZ UDPGothic', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 8px;
+        }
+        /* 発音時の文字拡大アニメーション */
+        .mora-highlight {
+            color: #f43f5e !important;
+            transform: scale(1.35) translateY(-6px);
+            text-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+            display: inline-block;
+        }
+        /* ひよこのぴょんぴょん跳ねるアニメーション */
+        @keyframes chickBounce {
+            0%, 100% {
+                transform: translateY(0) scale(1, 1);
+            }
+            30% {
+                transform: translateY(-16px) scale(0.95, 1.05);
+            }
+            50% {
+                transform: translateY(0) scale(1.05, 0.95);
+            }
+            65% {
+                transform: translateY(-6px) scale(0.98, 1.02);
+            }
+        }
+        .chick-bounce {
+            animation: chickBounce 1.4s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+    </style>
+</head>
+<body class="bg-sky-50 text-slate-800 w-screen h-screen m-0 p-0 overflow-hidden flex items-center justify-center select-none">
+
+    <!-- メインコンテナ -->
+    <div id="aspect-container" class="relative w-full h-full max-w-[177.78vh] max-h-[56.25vw] aspect-[16/9] bg-sky-100 shadow-2xl overflow-hidden flex flex-col justify-between p-4 md:p-6 rounded-2xl border-4 border-sky-300" style="container-type: inline-size;">
+
+        <!-- 1. スタート画面 -->
+        <div id="screen-start" class="w-full h-full flex flex-col items-center justify-between py-2">
+            <div class="flex items-center justify-between w-full px-2">
+                <h1 class="text-[5.5cqw] font-extrabold text-sky-900 textbook-font tracking-wider leading-none flex items-center gap-3">
+                    <svg class="w-[7cqw] h-[7cqw] drop-shadow-md shrink-0" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="noteGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f43f5e" />
+                                <stop offset="100%" stop-color="#fb923c" />
+                            </linearGradient>
+                            <linearGradient id="noteGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#06b6d4" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="32,18 82,10 82,24 32,32" fill="#eab308" />
+                        <rect x="32" y="20" width="9" height="42" rx="4.5" fill="#f97316" />
+                        <rect x="73" y="12" width="9" height="42" rx="4.5" fill="#06b6d4" />
+                        <ellipse cx="25" cy="62" rx="15" ry="12" transform="rotate(-15 25 62)" fill="url(#noteGrad1)" />
+                        <ellipse cx="66" cy="54" rx="15" ry="12" transform="rotate(-15 66 54)" fill="url(#noteGrad2)" />
+                    </svg>
+                    <span class="bg-gradient-to-r from-sky-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent">かたかな・ななな</span>
+                </h1>
+                
+                <button onclick="openWordManagerScreen()" class="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white border-2 border-orange-300 px-5 py-2 rounded-2xl text-[1.6cqw] font-black shadow-lg transition transform active:scale-95 cursor-pointer">
+                    <span>⚙️</span>
+                    <span>たんご かんり</span>
+                </button>
+            </div>
+
+            <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-4 border-sky-300 max-w-xl w-full flex flex-col items-center my-auto gap-3">
+                <p class="text-[2.8cqw] font-black text-sky-900 text-center leading-tight">リズムにのって おんどくしよう！</p>
+                
+                <!-- 跳ねるひよこのイラスト（サイズ: 3/4 = 8.25cqw） -->
+                <div class="flex justify-center items-center my-1">
+                    <svg class="w-[8.25cqw] h-[8.25cqw] chick-bounce drop-shadow-md" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="92" rx="22" ry="5" fill="rgba(0,0,0,0.15)" />
+                        <path d="M 38,82 L 32,92 M 38,82 L 38,93 M 38,82 L 44,92" stroke="#f97316" stroke-width="4" stroke-linecap="round" />
+                        <path d="M 62,82 L 56,92 M 62,82 L 62,93 M 62,82 L 68,92" stroke="#f97316" stroke-width="4" stroke-linecap="round" />
+                        <ellipse cx="50" cy="58" rx="28" ry="24" fill="#facc15" />
+                        <path d="M 23,56 C 15,50 12,62 23,64 Z" fill="#eab308" />
+                        <path d="M 77,56 C 85,50 88,62 77,64 Z" fill="#eab308" />
+                        <path d="M 50,40 C 38,20 62,20 50,40 Z" fill="#facc15" />
+                        <ellipse cx="50" cy="36" rx="22" ry="19" fill="#fde047" />
+                        <ellipse cx="38" cy="33" rx="3.5" ry="4.5" fill="#1e293b" />
+                        <circle cx="37" cy="31" r="1.5" fill="#ffffff" />
+                        <ellipse cx="62" cy="33" rx="3.5" ry="4.5" fill="#1e293b" />
+                        <circle cx="61" cy="31" r="1.5" fill="#ffffff" />
+                        <path d="M 45,38 Q 50,46 55,38 Z" fill="#f97316" />
+                        <ellipse cx="30" cy="39" rx="4" ry="2.5" fill="#f43f5e" opacity="0.4" />
+                        <ellipse cx="70" cy="39" rx="4" ry="2.5" fill="#f43f5e" opacity="0.4" />
+                        <path d="M 48,17 Q 45,10 49,8 M 52,17 Q 55,10 52,8" stroke="#facc15" stroke-width="3" stroke-linecap="round" fill="none" />
+                    </svg>
+                </div>
+
+                <div class="w-full bg-sky-50 rounded-2xl p-4 border-2 border-sky-200 flex flex-col items-center gap-2 shadow-inner">
+                    <div class="text-[1.8cqw] font-black text-sky-900">
+                        はやさ（BPM）：<span id="bpm-val" class="text-orange-500 text-[2.2cqw]">104</span>
+                    </div>
+                    <input type="range" id="bpm-slider" min="65" max="145" value="104" oninput="onBpmChange(this.value)" class="w-full h-4 bg-sky-200 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                    <div class="flex justify-between w-full text-[1.3cqw] text-sky-800 font-bold px-2 mt-1">
+                        <span>65（ゆっくり）</span>
+                        <span>104（ふつう）</span>
+                        <span>145（はやい）</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 w-full max-w-xl justify-center mb-1">
+                <button id="btn-voice-toggle" onclick="toggleVoiceSetting()" class="py-2.5 px-5 bg-[#FFFFFF] text-indigo-700 hover:bg-indigo-50 font-black text-[1.5cqw] rounded-2xl shadow-md border-2 border-indigo-500 transition transform active:scale-95 flex items-center gap-2 shrink-0 cursor-pointer">
+                    <span id="voice-icon">🔊</span>
+                    <span id="voice-text">おてほん音声ＯＮ</span>
+                </button>
+
+                <button onclick="startGame(false)" class="flex-1 py-2.5 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-black text-[1.9cqw] rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-rose-700 flex items-center justify-center gap-2 tracking-wider cursor-pointer">
+                    <span>▶</span>
+                    <span>スタート！</span>
+                </button>
+
+                <button onclick="startGame(true)" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-600 hover:from-emerald-500 hover:to-teal-700 text-white font-black text-[1.9cqw] rounded-2xl shadow-lg transform transition active:scale-95 border-b-4 border-teal-800 flex items-center justify-center gap-2 cursor-pointer">
+                    <span>🔄</span>
+                    <span>れんぞく</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. おんどく練習画面 -->
+        <div id="screen-practice" class="w-full h-full bg-white rounded-2xl p-4 flex flex-col justify-between items-center hidden relative shadow-md">
+            <!-- 「おてほん」「みんなで」バッジ -->
+            <div id="turn-badge" class="absolute top-3 left-4 px-5 py-2 rounded-2xl font-bold text-[1.5cqw] shadow-md bg-gradient-to-r from-blue-400 to-indigo-500 text-white border-2 border-white z-10 transition-colors duration-300">
+                おてほん
+            </div>
+
+            <button id="btn-practice-back" onclick="exitToStartScreen()" class="absolute top-3 right-4 bg-gradient-to-r from-pink-400 to-rose-500 text-white border-2 border-white px-5 py-2 rounded-2xl text-[1.5cqw] font-bold shadow-md transition active:scale-95 z-20 cursor-pointer">
+                🏠 もどる
+            </button>
+
+            <!-- カタカナ表示 -->
+            <div class="w-full flex-grow flex items-center justify-center pt-8 pb-1">
+                <div id="practice-word-text" class="font-black textbook-font text-slate-800 leading-none whitespace-nowrap text-center flex items-center justify-center gap-3 text-[15cqw]">
+                </div>
+            </div>
+
+            <!-- SVGイラスト表示 -->
+            <div class="w-full h-[18cqw] flex items-center justify-center my-1">
+                <div id="practice-word-illustration" class="w-[18cqw] h-[18cqw] text-[15cqw] flex items-center justify-center drop-shadow-lg">
+                </div>
+            </div>
+
+            <!-- モーラ拍表示コンテナ (○・●) -->
+            <div id="beat-circles-container" class="flex items-center justify-center gap-[2cqw] bg-sky-50 px-8 py-3 rounded-2xl border-2 border-sky-200 mb-2 shadow-inner min-h-[5cqw]">
+            </div>
+        </div>
+
+        <!-- 3. クイズ画面 -->
+        <div id="screen-quiz" class="w-full h-full flex flex-col justify-between items-center hidden py-2 relative">
+            <div class="w-full bg-white rounded-2xl border-4 border-sky-300 px-6 py-3 shadow-md text-center flex items-center justify-between">
+                <h2 id="quiz-question-text" class="text-[3cqw] font-black textbook-font text-slate-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                    「のりもの」の なかまは どれ？
+                </h2>
+                <div id="quiz-countdown-badge" class="bg-gradient-to-r from-rose-500 to-orange-500 text-white font-black text-[3.8cqw] px-6 py-0.5 rounded-2xl shadow min-w-[4rem] text-center">
+                    5
+                </div>
+            </div>
+
+            <div id="quiz-cards-container" class="grid grid-cols-3 gap-6 w-full flex-grow my-4 items-center relative z-0 px-2">
+            </div>
+
+            <div class="h-[6cqw] flex items-center justify-center gap-6 relative z-20">
+                <button id="btn-replay" onclick="startNext3WordsSession()" class="px-8 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-[2.2cqw] rounded-2xl shadow-lg border-b-4 border-teal-700 hidden active:scale-95 flex items-center gap-2 cursor-pointer">
+                    <span>🔄</span>
+                    <span>つぎへ</span>
+                </button>
+                <button id="btn-end" onclick="exitToStartScreen()" class="px-8 py-2.5 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-black text-[2.2cqw] rounded-2xl shadow-lg border-b-4 border-pink-700 active:scale-95 flex items-center gap-2 cursor-pointer">
+                    <span>🏠</span>
+                    <span>おわる</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. 単語管理画面 -->
+        <div id="screen-word-manager" class="w-full h-full bg-white/95 rounded-2xl p-4 flex flex-col justify-between items-center hidden relative shadow-lg border-4 border-sky-200">
+            <div class="w-full flex items-center justify-between border-b-2 border-sky-200 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-[3.5cqw]">📝</span>
+                    <h2 class="text-[3cqw] font-black text-sky-900 textbook-font">たんご かんり</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="resetWordsToDefault()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 border-2 border-rose-300 px-4 py-1.5 rounded-xl text-[1.4cqw] font-black transition active:scale-95 cursor-pointer">
+                        🔄 しょきか
+                    </button>
+                    <button onclick="exitToStartScreen()" class="bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-black px-5 py-1.5 rounded-xl text-[1.5cqw] shadow-md transition active:scale-95 cursor-pointer">
+                        👈 もどる
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full flex-grow grid grid-cols-12 gap-4 my-2 overflow-hidden">
+                <div class="col-span-5 bg-sky-50/80 p-4 rounded-2xl border-2 border-sky-200 shadow-sm flex flex-col justify-between overflow-y-auto">
+                    <div>
+                        <h3 id="form-title" class="text-[1.8cqw] font-black text-sky-900 border-b border-sky-200 pb-1 mb-3">➕ あたらしい たんご</h3>
+                        <div class="mb-3">
+                            <label class="block text-[1.2cqw] font-black text-slate-700 mb-1">たんごの なまえ (1〜8もじ)</label>
+                            <input type="text" id="input-new-word" placeholder="例: ライオン" class="w-full px-3 py-1.5 text-[1.6cqw] border-2 border-sky-300 rounded-xl focus:outline-none focus:border-sky-500 font-bold textbook-font bg-white">
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-[1.2cqw] font-black text-slate-700 mb-1">カテゴリー</label>
+                            <select id="select-category-1" class="w-full px-3 py-2 text-[1.4cqw] border-2 border-sky-300 rounded-xl focus:outline-none font-bold bg-white">
+                            </select>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-sky-200">
+                            <label class="block text-[1.2cqw] font-black text-sky-900 mb-1">➕ カテゴリーの ついか</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="input-new-category" placeholder="例: のみもの" class="flex-1 px-3 py-1.5 text-[1.3cqw] border-2 border-sky-300 rounded-xl focus:outline-none font-bold bg-white">
+                                <button onclick="addNewCategory()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-4 py-1.5 rounded-xl text-[1.3cqw] shadow transition active:scale-95 cursor-pointer">
+                                    ついか
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div id="add-word-message" class="text-[1.2cqw] font-bold text-rose-500 mb-1 h-[1.6cqw]"></div>
+                        <button id="btn-save-word" onclick="saveWordFromManager()" class="w-full py-2 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-black text-[1.6cqw] rounded-xl shadow border-b-2 border-orange-700 active:scale-95 transition cursor-pointer">
+                            とうろく する
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-span-7 bg-sky-50/80 p-4 rounded-2xl border-2 border-sky-200 shadow-sm flex flex-col justify-between overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-sky-200 pb-1 mb-2">
+                        <h3 class="text-[2cqw] font-black text-sky-900">📋 とうろくずみ たんご (<span id="word-count-badge">0</span>こ)</h3>
+                    </div>
+                    <div id="manager-word-list" class="flex-grow overflow-y-auto pr-1 grid grid-cols-2 gap-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // デフォルト単語データベース
+        const DEFAULT_WORD_DATABASE = [
+            // どうぶつ
+            { word: "ライオン", category: "どうぶつ" },
+            { word: "ゾウ", category: "どうぶつ" },
+            { word: "パンダ", category: "どうぶつ" },
+            { word: "コアラ", category: "どうぶつ" },
+            { word: "キリン", category: "どうぶつ" },
+            { word: "ゴリラ", category: "どうぶつ" },
+            { word: "カンガルー", category: "どうぶつ" },
+            { word: "サイ", category: "どうぶつ" },
+            { word: "トラ", category: "どうぶつ" },
+            { word: "ペンギン", category: "どうぶつ" },
+            // のりもの
+            { word: "バス", category: "のりもの" },
+            { word: "タクシー", category: "のりもの" },
+            { word: "トラック", category: "のりもの" },
+            { word: "バイク", category: "のりもの" },
+            { word: "ヘリコプター", category: "のりもの" },
+            { word: "ヨット", category: "のりもの" },
+            { word: "ボート", category: "のりもの" },
+            { word: "ロケット", category: "のりもの" },
+            // くだもの
+            { word: "バナナ", category: "くだもの" },
+            { word: "パイナップル", category: "くだもの" },
+            { word: "メロン", category: "くだもの" },
+            { word: "レモン", category: "くだもの" },
+            { word: "オレンジ", category: "くだもの" },
+            { word: "キウイ", category: "くだもの" },
+            { word: "ライチ", category: "くだもの" },
+            // はな
+            { word: "チューリップ", category: "はな" },
+            { word: "パンジー", category: "はな" },
+            { word: "コスモス", category: "はな" },
+            { word: "ラベンダー", category: "はな" },
+            { word: "ガーベラ", category: "はな" },
+            // ぶんぼうぐ
+            { word: "クレヨン", category: "ぶんぼうぐ" },
+            { word: "ホッチキス", category: "ぶんぼうぐ" },
+            { word: "ボールペン", category: "ぶんぼうぐ" },
+            { word: "ファイル", category: "ぶんぼうぐ" },
+            // どうぐ
+            { word: "スコップ", category: "どうぐ" },
+            { word: "バケツ", category: "どうぐ" },
+            { word: "ロープ", category: "どうぐ" },
+            { word: "ドライバー", category: "どうぐ" },
+            { word: "ペンチ", category: "どうぐ" },
+            { word: "ハンマー", category: "どうぐ" },
+            // きかい
+            { word: "パソコン", category: "きかい" },
+            { word: "テレビ", category: "きかい" },
+            { word: "ラジオ", category: "きかい" },
+            { word: "エアコン", category: "きかい" },
+            { word: "ミキサー", category: "きかい" },
+            { word: "カメラ", category: "きかい" },
+            // おもちゃ
+            { word: "パズル", category: "おもちゃ" },
+            { word: "ボール", category: "おもちゃ" },
+            { word: "ヨーヨー", category: "おもちゃ" },
+            { word: "ミニカー", category: "おもちゃ" },
+            { word: "トランプ", category: "おもちゃ" },
+            // おかし
+            { word: "チョコレート", category: "おかし" },
+            { word: "クッキー", category: "おかし" },
+            { word: "ガム", category: "おかし" },
+            { word: "キャラメル", category: "おかし" },
+            { word: "プリン", category: "おかし" },
+            { word: "グミ", category: "おかし" },
+            { word: "ドーナツ", category: "おかし" },
+            // りょうり
+            { word: "カレー", category: "りょうり" },
+            { word: "サラダ", category: "りょうり" },
+            { word: "ステーキ", category: "りょうり" },
+            { word: "ハンバーグ", category: "りょうり" },
+            { word: "オムライス", category: "りょうり" },
+            { word: "ピザ", category: "りょうり" },
+            { word: "グラタン", category: "りょうり" },
+            { word: "シチュー", category: "りょうり" },
+            // たてもの
+            { word: "ホテル", category: "たてもの" },
+            { word: "コンビニ", category: "たてもの" },
+            { word: "マンション", category: "たてもの" },
+            { word: "レストラン", category: "たてもの" },
+            { word: "スーパー", category: "たてもの" },
+            { word: "タワー", category: "たてもの" },
+            // はきもの
+            { word: "スニーカー", category: "はきもの" },
+            { word: "サンダル", category: "はきもの" },
+            { word: "ブーツ", category: "はきもの" },
+            // のみもの
+            { word: "ジュース", category: "のみもの" },
+            { word: "ココア", category: "のみもの" },
+            { word: "コーヒー", category: "のみもの" },
+            { word: "シェイク", category: "のみもの" },
+            { word: "コーラ", category: "のみもの" },
+            { word: "サイダー", category: "のみもの" },
+            { word: "レモネード", category: "のみもの" },
+            { word: "カフェオレ", category: "のみもの" }
+        ];
+
+        let wordDatabase = [...DEFAULT_WORD_DATABASE];
+        let categories = ["どうぶつ", "のりもの", "くだもの", "はな", "ぶんぼうぐ", "どうぐ", "きかい", "おもちゃ", "おかし", "りょうり", "たてもの", "はきもの", "のみもの"];
+
+        let editingWordIndex = null;
+        let isContinuousMode = false;
+        let isVoiceEnabled = true;
+        let currentBpm = 104;
+
+        let current3Words = [];
+        let currentWordIndexInSession = 0;
+        let currentWordObj = null;
+
+        let timerId = null;
+        let quizTimerId = null;
+        let autoAdvanceTimerId = null;
+
+        let practiceStep = 0;
+        let beatIndex = 0;
+        let currentRhythmPattern = [];
+
+        let quizCountdown = 5;
+        let selectedQuizCardIndex = null;
+        let correctQuizCardIndex = null;
+        let quizChoices = [];
+
+        let audioCtx = null;
+        let recentWordHistory = []; // 直近に出題された単語の履歴
+
+        const WORD_EMOJI_MAP = {
+            "ライオン": "🦁", "ゾウ": "🐘", "パンダ": "🐼", "コアラ": "🐨", "キリン": "🦒",
+            "ゴリラ": "🦍", "カンガルー": "🦘", "サイ": "🦏", "トラ": "🐯", "ペンギン": "🐧",
+            "バス": "🚌", "タクシー": "🚕", "トラック": "🚚", "バイク": "🏍️", "ヘリコプター": "🚁",
+            "ヨット": "⛵", "ボート": "🚣", "ロケット": "🚀", "バナナ": "🍌", "パイナップル": "🍍",
+            "メロン": "🍈", "レモン": "🍋", "オレンジ": "🍊", "キウイ": "🥝", "ラベンダー": "🪻",
+            "クレヨン": "🖍️", "ボールペン": "🖊️", "ファイル": "📁", "バケツ": "🪣", "ロープ": "🪢",
+            "ドライバー": "🪛", "ペンチ": "🔧", "ハンマー": "🔨", "パソコン": "💻", "テレビ": "📺",
+            "ラジオ": "📻", "カメラ": "📷", "パズル": "🧩", "ボール": "⚽", "ヨーヨー": "🪀",
+            "ミニカー": "🚗", "トランプ": "🃏", "チョコレート": "🍫", "クッキー": "🍪", "プリン": "🍮",
+            "ドーナツ": "🍩", "カレー": "🍛", "サラダ": "🥗", "ステーキ": "🥩", "ハンバーグ": "🍔",
+            "ピザ": "🍕", "シチュー": "🍲", "ホテル": "🏨", "コンビニ": "🏪", "マンション": "🏢",
+            "スーパー": "🛒", "タワー": "🗼", "スニーカー": "👟", "サンダル": "🩴", "ブーツ": "👢",
+            "ジュース": "🧃", "ココア": "☕", "コーヒー": "☕", "シェイク": "🥤", "カフェオレ": "☕"
+        };
+
+        function getSimpleIllustrationSvg(item) {
+            const word = item ? item.word : "";
+
+            if (word === "チューリップ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 50 48 Q 52 75 50 92" stroke="#16a34a" stroke-width="6" stroke-linecap="round" fill="none"/>
+                    <path d="M 50 75 C 25 70 20 50 32 45 C 38 62 48 70 50 75 Z" fill="#22c55e"/>
+                    <path d="M 50 78 C 75 73 80 53 68 48 C 62 65 52 73 50 78 Z" fill="#15803d"/>
+                    <path d="M 28 35 C 22 15 42 12 50 28 C 58 12 78 15 72 35 C 68 55 32 55 28 35 Z" fill="#f43f5e"/>
+                    <path d="M 38 42 C 32 22 46 16 50 28 C 45 36 40 40 38 42 Z" fill="#fb7185"/>
+                    <path d="M 62 42 C 68 22 54 16 50 28 C 55 36 60 40 62 42 Z" fill="#e11d48"/>
+                    <path d="M 50 28 C 42 12 58 12 50 28 Z" fill="#fda4af"/>
+                </svg>`;
+            }
+            if (word === "ステーキ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <ellipse cx="50" cy="62" rx="44" ry="24" fill="#334155"/>
+                    <ellipse cx="50" cy="59" rx="41" ry="21" fill="#1e293b"/>
+                    <path d="M 8 62 C 8 76 92 76 92 62 Z" fill="#b45309" opacity="0.3"/>
+                    <path d="M 22 55 C 18 42 30 32 52 35 C 78 38 82 52 72 65 C 60 74 30 70 22 55 Z" fill="#7f1d1d"/>
+                    <path d="M 25 53 C 21 43 32 35 52 38 C 74 41 78 52 70 62 C 58 70 32 67 25 53 Z" fill="#b91c1c"/>
+                    <path d="M 32 45 L 62 61 M 42 41 L 68 55 M 30 54 L 52 65" stroke="#450a0a" stroke-width="3.5" stroke-linecap="round"/>
+                    <rect x="44" y="42" width="12" height="10" rx="3" fill="#facc15" transform="rotate(12 50 47)"/>
+                    <circle cx="72" cy="42" r="4" fill="#fde047"/>
+                    <circle cx="78" cy="46" r="3.5" fill="#fde047"/>
+                    <circle cx="75" cy="50" r="3" fill="#fde047"/>
+                    <path d="M 30 30 Q 32 22 36 26 M 50 26 Q 52 18 56 22 M 68 28 Q 70 20 74 24" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>`;
+            }
+            if (word === "ライチ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 35 22 Q 50 10 70 18" stroke="#15803d" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path d="M 52 16 Q 32 8 20 22 C 28 32 42 26 52 16 Z" fill="#22c55e"/>
+                    <circle cx="66" cy="55" r="22" fill="#e11d48"/>
+                    <circle cx="66" cy="55" r="22" fill="none" stroke="#9f1239" stroke-width="3" stroke-dasharray="3,3"/>
+                    <circle cx="36" cy="62" r="22" fill="#be123c"/>
+                    <circle cx="36" cy="62" r="16" fill="#f8fafc"/>
+                    <circle cx="36" cy="62" r="13" fill="#ffffff"/>
+                    <ellipse cx="33" cy="58" rx="4" ry="7" fill="#cbd5e1" opacity="0.5"/>
+                    <ellipse cx="38" cy="63" rx="3" ry="5" fill="#78350f"/>
+                    <path d="M 16 55 C 10 65 20 80 28 78 C 22 72 20 62 16 55 Z" fill="#9f1239"/>
+                </svg>`;
+            }
+            if (word === "パンジー") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 50 55 L 50 90" stroke="#16a34a" stroke-width="6" stroke-linecap="round"/>
+                    <ellipse cx="35" cy="35" rx="18" ry="22" fill="#7e22ce"/>
+                    <ellipse cx="65" cy="35" rx="18" ry="22" fill="#7e22ce"/>
+                    <ellipse cx="25" cy="55" rx="18" ry="20" fill="#a855f7"/>
+                    <ellipse cx="75" cy="55" rx="18" ry="20" fill="#a855f7"/>
+                    <ellipse cx="50" cy="65" rx="22" ry="24" fill="#facc15"/>
+                    <circle cx="50" cy="52" r="10" fill="#312e81"/>
+                    <circle cx="50" cy="52" r="4" fill="#fef08a"/>
+                </svg>`;
+            }
+            if (word === "コスモス") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 50 50 L 50 92" stroke="#22c55e" stroke-width="5"/>
+                    <g fill="#ec4899">
+                        <ellipse cx="50" cy="20" rx="7" ry="22" />
+                        <ellipse cx="50" cy="80" rx="7" ry="22" />
+                        <ellipse cx="20" cy="50" rx="22" ry="7" />
+                        <ellipse cx="80" cy="50" rx="22" ry="7" />
+                        <ellipse cx="29" cy="29" rx="7" ry="22" transform="rotate(-45 29 29)" />
+                        <ellipse cx="71" cy="71" rx="7" ry="22" transform="rotate(-45 71 71)" />
+                        <ellipse cx="71" cy="29" rx="7" ry="22" transform="rotate(45 71 29)" />
+                        <ellipse cx="29" cy="71" rx="7" ry="22" transform="rotate(45 29 71)" />
+                    </g>
+                    <circle cx="50" cy="50" r="11" fill="#facc15"/>
+                </svg>`;
+            }
+            if (word === "スコップ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="44" y="10" width="12" height="48" rx="6" fill="#f97316"/>
+                    <path d="M 28 52 L 72 52 L 64 88 C 60 94 40 94 36 88 Z" fill="#94a3b8"/>
+                    <path d="M 34 52 L 66 52 L 60 82 C 57 86 43 86 40 82 Z" fill="#cbd5e1"/>
+                </svg>`;
+            }
+            if (word === "エアコン") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="10" y="25" width="80" height="42" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="4"/>
+                    <line x1="15" y1="52" x2="85" y2="52" stroke="#cbd5e1" stroke-width="2"/>
+                    <circle cx="80" cy="36" r="3" fill="#22c55e"/>
+                    <path d="M 30 72 Q 25 82 20 88 M 50 72 Q 50 84 50 90 M 70 72 Q 75 82 80 88" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none"/>
+                </svg>`;
+            }
+            if (word === "ミキサー") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="30" y="62" width="40" height="28" rx="6" fill="#ef4444"/>
+                    <circle cx="50" cy="76" r="5" fill="#ffffff"/>
+                    <path d="M 32 20 L 68 20 L 62 58 L 38 58 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="3"/>
+                    <rect x="28" y="14" width="44" height="8" rx="3" fill="#dc2626"/>
+                    <path d="M 45 42 L 55 42 M 50 37 L 50 47" stroke="#64748b" stroke-width="3"/>
+                </svg>`;
+            }
+            if (word === "ガム") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="15" y="38" width="70" height="26" rx="5" fill="#10b981" transform="rotate(-10 50 51)"/>
+                    <rect x="32" y="38" width="36" height="26" fill="#34d399" transform="rotate(-10 50 51)"/>
+                    <text x="50" y="56" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle" transform="rotate(-10 50 51)">GUM</text>
+                </svg>`;
+            }
+            if (word === "キャラメル") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 20 30 L 38 42 L 20 54 Z" fill="#fbbf24"/>
+                    <path d="M 80 30 L 62 42 L 80 54 Z" fill="#fbbf24"/>
+                    <rect x="34" y="32" width="32" height="24" rx="4" fill="#f59e0b" transform="rotate(-5 50 44)"/>
+                    <path d="M 30 65 L 55 52 L 78 63 L 52 77 Z" fill="#fbbf24"/>
+                    <path d="M 30 65 L 52 77 L 52 90 L 30 76 Z" fill="#d97706"/>
+                    <path d="M 52 77 L 78 63 L 78 76 L 52 90 Z" fill="#b45309"/>
+                    <path d="M 36 65 L 54 55 L 68 62 L 52 72 Z" fill="#fef08a" opacity="0.6"/>
+                </svg>`;
+            }
+            if (word === "グミ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <g transform="translate(18, 20)">
+                        <circle cx="12" cy="12" r="6" fill="#f43f5e"/>
+                        <circle cx="32" cy="12" r="6" fill="#f43f5e"/>
+                        <ellipse cx="22" cy="24" rx="14" ry="12" fill="#fb7185"/>
+                        <ellipse cx="22" cy="45" rx="16" ry="18" fill="#f43f5e"/>
+                        <circle cx="10" cy="40" r="5" fill="#fb7185"/>
+                        <circle cx="34" cy="40" r="5" fill="#fb7185"/>
+                        <circle cx="12" cy="60" r="6" fill="#fb7185"/>
+                        <circle cx="32" cy="60" r="6" fill="#fb7185"/>
+                        <ellipse cx="18" cy="20" rx="3" ry="2" fill="#ffffff" opacity="0.7"/>
+                        <ellipse cx="16" cy="38" rx="4" ry="8" fill="#ffffff" opacity="0.5"/>
+                    </g>
+                    <g transform="translate(48, 35)">
+                        <path d="M 22 5 L 27 16 L 38 18 L 30 26 L 32 37 L 22 31 L 12 37 L 14 26 L 6 18 L 17 16 Z" fill="#facc15" stroke="#f59e0b" stroke-width="2"/>
+                        <path d="M 22 8 L 26 17 L 34 18 L 28 24 L 29 32 L 22 28 L 15 32 L 16 24 L 10 18 L 18 17 Z" fill="#fef08a" opacity="0.8"/>
+                        <circle cx="20" cy="15" r="2" fill="#ffffff" opacity="0.8"/>
+                    </g>
+                </svg>`;
+            }
+            if (word === "オムライス") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <ellipse cx="50" cy="65" rx="42" ry="20" fill="#e2e8f0"/>
+                    <ellipse cx="50" cy="62" rx="38" ry="16" fill="#ffffff"/>
+                    <path d="M 20 56 C 20 25 80 25 80 56 Z" fill="#facc15"/>
+                    <path d="M 28 48 Q 40 38 50 48 T 72 44" stroke="#ef4444" stroke-width="6" stroke-linecap="round" fill="none"/>
+                </svg>`;
+            }
+            if (word === "コーラ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 36 22 L 64 22 L 58 85 L 42 85 Z" fill="#7f1d1d"/>
+                    <rect x="36" y="45" width="28" height="22" fill="#dc2626"/>
+                    <text x="50" y="61" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">Cola</text>
+                    <rect x="42" y="15" width="16" height="7" fill="#dc2626"/>
+                </svg>`;
+            }
+            if (word === "サイダー") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 32 25 L 68 25 L 62 85 L 38 85 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="3"/>
+                    <circle cx="45" cy="70" r="3" fill="#38bdf8"/>
+                    <circle cx="55" cy="55" r="4" fill="#38bdf8"/>
+                    <circle cx="42" cy="40" r="2.5" fill="#38bdf8"/>
+                    <rect x="46" y="10" width="8" height="50" fill="#f43f5e" transform="rotate(15 50 35)"/>
+                </svg>`;
+            }
+            if (word === "レモネード") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 30 28 L 70 28 L 63 86 L 37 86 Z" fill="#fef08a" stroke="#eab308" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="12" fill="#facc15"/>
+                    <circle cx="50" cy="50" r="9" fill="#fef08a"/>
+                    <rect x="52" y="12" width="6" height="60" fill="#f43f5e" transform="rotate(12 55 42)"/>
+                </svg>`;
+            }
+            if (word === "グラタン") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <ellipse cx="50" cy="58" rx="42" ry="22" fill="#f59e0b"/>
+                    <ellipse cx="50" cy="55" rx="38" ry="18" fill="#fef3c7"/>
+                    <ellipse cx="50" cy="55" rx="30" ry="12" fill="#d97706" opacity="0.8"/>
+                    <circle cx="42" cy="52" r="3" fill="#16a34a"/>
+                    <circle cx="58" cy="56" r="3" fill="#16a34a"/>
+                </svg>`;
+            }
+            if (word === "ホッチキス") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="18" y="68" width="64" height="12" rx="4" fill="#0284c7"/>
+                    <rect x="22" y="65" width="56" height="5" fill="#cbd5e1"/>
+                    <rect x="68" y="64" width="8" height="3" fill="#64748b"/>
+                    <path d="M 22 65 L 76 42 L 78 50 L 22 68 Z" fill="#94a3b8"/>
+                    <path d="M 18 64 C 18 42 35 30 76 35 C 82 35 84 40 82 48 L 74 48 C 72 42 35 48 24 64 Z" fill="#38bdf8"/>
+                    <path d="M 22 60 C 24 45 40 34 72 38 C 76 38 78 41 77 45 C 70 41 36 48 26 60 Z" fill="#bae6fd"/>
+                    <line x1="58" y1="36" x2="68" y2="37" stroke="#0284c7" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="56" y1="40" x2="66" y2="41" stroke="#0284c7" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="24" cy="62" r="5" fill="#0369a1"/>
+                    <circle cx="24" cy="62" r="2.5" fill="#cbd5e1"/>
+                </svg>`;
+            }
+            if (word === "ガーベラ") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <path d="M 50 50 L 50 92" stroke="#22c55e" stroke-width="5"/>
+                    <g fill="#f43f5e">
+                        <ellipse cx="50" cy="18" rx="5" ry="22" />
+                        <ellipse cx="50" cy="82" rx="5" ry="22" />
+                        <ellipse cx="18" cy="50" rx="22" ry="5" />
+                        <ellipse cx="82" cy="50" rx="22" ry="5" />
+                        <ellipse cx="27" cy="27" rx="5" ry="22" transform="rotate(-45 27 27)" />
+                        <ellipse cx="73" cy="73" rx="5" ry="22" transform="rotate(-45 73 73)" />
+                        <ellipse cx="73" cy="27" rx="5" ry="22" transform="rotate(45 73 27)" />
+                        <ellipse cx="27" cy="73" rx="5" ry="22" transform="rotate(45 27 73)" />
+                    </g>
+                    <circle cx="50" cy="50" r="12" fill="#78350f"/>
+                    <circle cx="50" cy="50" r="7" fill="#facc15"/>
+                </svg>`;
+            }
+            if (word === "レストラン") {
+                return `<svg class="w-full h-full" viewBox="0 0 100 100">
+                    <rect x="18" y="40" width="64" height="48" rx="6" fill="#fff7ed" stroke="#f97316" stroke-width="3"/>
+                    <path d="M 12 40 L 50 18 L 88 40 Z" fill="#ea580c"/>
+                    <path d="M 22 40 L 32 40 L 36 28 L 24 34 Z" fill="#ffffff"/>
+                    <path d="M 42 40 L 52 40 L 50 18 L 44 21 Z" fill="#ffffff"/>
+                    <path d="M 62 40 L 72 40 L 76 34 L 64 28 Z" fill="#ffffff"/>
+                    <path d="M 12 40 Q 18 46 24 40 Q 30 46 36 40 Q 42 46 48 40 Q 54 46 60 40 Q 66 46 72 40 Q 78 46 84 40 Q 88 44 88 40 L 12 40 Z" fill="#dc2626"/>
+                    <rect x="42" y="60" width="16" height="28" fill="#78350f" rx="2"/>
+                    <circle cx="54" cy="74" r="1.5" fill="#facc15"/>
+                    <rect x="24" y="52" width="12" height="14" rx="2" fill="#bae6fd" stroke="#38bdf8" stroke-width="1.5"/>
+                    <rect x="64" y="52" width="12" height="14" rx="2" fill="#bae6fd" stroke="#38bdf8" stroke-width="1.5"/>
+                    <circle cx="50" cy="31" r="7" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5"/>
+                    <path d="M 47 28 L 47 34 M 49 28 L 49 34 M 51 28 L 51 34 M 47 31 L 51 31" stroke="#854d0e" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M 53 28 C 55 28 55 31 53 32 L 53 34" stroke="#854d0e" stroke-width="1" stroke-linecap="round" fill="none"/>
+                </svg>`;
+            }
+
+            const emoji = WORD_EMOJI_MAP[word] || "⭐️";
+            return `<div class="w-full h-full flex items-center justify-center leading-none select-none text-[1em]">${emoji}</div>`;
+        }
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSoundTone(freq, type, duration, gainVal = 0.2) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function playCircleSound() {
+            playSoundTone(880, 'sine', 0.12, 0.3);
+        }
+
+        function playRestSound() {
+            playSoundTone(440, 'triangle', 0.12, 0.2);
+        }
+
+        function playQuizStartSound() {
+            playSoundTone(523.25, 'sine', 0.1, 0.2);
+            setTimeout(() => playSoundTone(659.25, 'sine', 0.1, 0.2), 100);
+            setTimeout(() => playSoundTone(783.99, 'sine', 0.2, 0.2), 200);
+        }
+
+        function playCountdownTickSound(isZero = false) {
+            if (isZero) {
+                playSoundTone(880, 'square', 0.25, 0.3);
+            } else {
+                playSoundTone(440, 'sine', 0.08, 0.15);
+            }
+        }
+
+        // 明るく軽快なポップファンファーレ効果音
+        function playAnswerRevealSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // ド・ミ・ソ・高いド
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.0001, now + idx * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.08 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.4);
+                });
+            } catch(e){}
+        }
+
+        function calculateMoraCount(str) {
+            let count = 0;
+            const smallChars = /[ァィゥェォャュョヮ]/;
+            for (let i = 0; i < str.length; i++) {
+                if (i > 0 && smallChars.test(str[i])) {
+                    continue;
+                }
+                count++;
+            }
+            return count;
+        }
+
+        function getRhythmPatternForWord(word) {
+            const mora = calculateMoraCount(word);
+            switch(mora) {
+                case 2: return [1, 1, 0, 0];
+                case 3: return [1, 1, 1, 0];
+                case 4: return [1, 1, 1, 1];
+                case 5: return [1, 1, 1, 1, 1, 0, 0];
+                case 6: return [1, 1, 1, 1, 1, 1, 0];
+                default:
+                    if (mora < 2) return [1, 1, 0, 0];
+                    let pattern = [];
+                    for(let i=0; i<mora; i++) pattern.push(1);
+                    pattern.push(0);
+                    return pattern;
+            }
+        }
+
+        function onBpmChange(val) {
+            currentBpm = parseInt(val, 10);
+            document.getElementById('bpm-val').innerText = currentBpm;
+        }
+
+        function toggleVoiceSetting() {
+            isVoiceEnabled = !isVoiceEnabled;
+            document.getElementById('voice-icon').innerText = isVoiceEnabled ? '🔊' : '🔇';
+            document.getElementById('voice-text').innerText = isVoiceEnabled ? 'おてほん音声ＯＮ' : 'おてほん音声ＯＦＦ';
+        }
+
+        function showScreen(screenId) {
+            ['screen-start', 'screen-practice', 'screen-quiz', 'screen-word-manager'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function exitToStartScreen() {
+            clearInterval(timerId);
+            clearInterval(quizTimerId);
+            clearTimeout(autoAdvanceTimerId);
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            showScreen('screen-start');
+        }
+
+        function startGame(continuous = false) {
+            getAudioContext();
+            isContinuousMode = continuous;
+            if (wordDatabase.length === 0) return;
+            startNext3WordsSession();
+        }
+
+        function startNext3WordsSession() {
+            clearTimeout(autoAdvanceTimerId);
+            clearInterval(timerId);
+            clearInterval(quizTimerId);
+
+            // 1. 直近に出題されていない単語を優先候補として取得
+            let candidates = wordDatabase.filter(w => !recentWordHistory.includes(w.word));
+            
+            // 候補が3語未満の場合は全体データベースから補充
+            if (candidates.length < 3) {
+                candidates = [...wordDatabase];
+            }
+
+            let selected = [];
+            let attempts = 0;
+
+            // 2. 「3枚とも同じカテゴリー」にならないよう抽選試行
+            while (attempts < 100) {
+                attempts++;
+                const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+                let picked = shuffled.slice(0, 3);
+
+                // 万が一3枚に届かない場合は全体DBから被りなく補充
+                if (picked.length < 3) {
+                    const fallback = [...wordDatabase].sort(() => Math.random() - 0.5);
+                    for (let item of fallback) {
+                        if (picked.length >= 3) break;
+                        if (!picked.some(p => p.word === item.word)) {
+                            picked.push(item);
+                        }
+                    }
+                }
+
+                if (picked.length === 3) {
+                    const c1 = picked[0].category;
+                    const c2 = picked[1].category;
+                    const c3 = picked[2].category;
+
+                    // 3語とも同じカテゴリーでなければ決定
+                    if (!(c1 === c2 && c2 === c3)) {
+                        selected = picked;
+                        break;
+                    }
+                }
+            }
+
+            // 保険としてのフォールバック
+            if (selected.length < 3) {
+                selected = [...wordDatabase].sort(() => Math.random() - 0.5).slice(0, 3);
+            }
+
+            current3Words = selected;
+
+            // 3. 出題履歴の更新（登録数の約50%、最大18語分まで重複をブロック）
+            current3Words.forEach(w => {
+                recentWordHistory.push(w.word);
+            });
+            const maxHistory = Math.min(18, Math.max(6, Math.floor(wordDatabase.length * 0.5)));
+            while (recentWordHistory.length > maxHistory) {
+                recentWordHistory.shift();
+            }
+
+            currentWordIndexInSession = 0;
+            startSingleWordPractice();
+        }
+
+        function startSingleWordPractice() {
+            clearInterval(timerId);
+
+            currentWordObj = current3Words[currentWordIndexInSession];
+            currentRhythmPattern = getRhythmPatternForWord(currentWordObj.word);
+            practiceStep = 0; 
+            beatIndex = 0;
+
+            renderPracticeWordText(currentWordObj.word);
+            document.getElementById('practice-word-illustration').innerHTML = getSimpleIllustrationSvg(currentWordObj);
+            
+            renderBeatCircles();
+            updateTurnBadge();
+
+            showScreen('screen-practice');
+
+            const intervalMs = (60 / currentBpm) * 1000;
+            timerId = setInterval(onPracticeBeatTick, intervalMs);
+        }
+
+        function getMoraChunks(word) {
+            const smallChars = /[ァィゥェォャュョヮ]/;
+            const moras = [];
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                if (i > 0 && smallChars.test(char)) {
+                    moras[moras.length - 1] += char;
+                } else {
+                    moras.push(char);
+                }
+            }
+            return moras;
+        }
+
+        function renderPracticeWordText(word) {
+            const container = document.getElementById('practice-word-text');
+            container.innerHTML = '';
+            const moras = getMoraChunks(word);
+            moras.forEach((mora, idx) => {
+                const span = document.createElement('span');
+                span.id = `mora-char-${idx}`;
+                span.className = 'mora-char transition-all duration-150 inline-block px-1 text-slate-800';
+                span.innerText = mora;
+                container.appendChild(span);
+            });
+        }
+
+        function renderBeatCircles() {
+            const container = document.getElementById('beat-circles-container');
+            container.innerHTML = '';
+            currentRhythmPattern.forEach((val, idx) => {
+                const circle = document.createElement('div');
+                circle.id = `beat-circle-${idx}`;
+                circle.className = `w-[4.5cqw] h-[4.5cqw] rounded-full flex items-center justify-center text-[2.5cqw] font-black border-4 transition-all duration-100 ${
+                    val === 1 
+                        ? 'bg-amber-400 border-amber-500 text-white' 
+                        : 'bg-slate-300 border-slate-400 text-slate-600'
+                }`;
+                circle.innerText = val === 1 ? '○' : '●';
+                container.appendChild(circle);
+            });
+        }
+
+        function updateTurnBadge() {
+            const badge = document.getElementById('turn-badge');
+            const isOtehon = (practiceStep % 2 === 0);
+            badge.innerText = isOtehon ? 'おてほん' : 'みんなで';
+            if (isOtehon) {
+                badge.className = 'absolute top-3 left-4 px-5 py-2 rounded-2xl font-bold text-[1.5cqw] shadow-md bg-gradient-to-r from-blue-400 to-indigo-500 text-white border-2 border-white z-10';
+            } else {
+                badge.className = 'absolute top-3 left-4 px-5 py-2 rounded-2xl font-bold text-[1.5cqw] shadow-md bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-2 border-white z-10';
+            }
+        }
+
+        function onPracticeBeatTick() {
+            const isOtehon = (practiceStep % 2 === 0);
+            const val = currentRhythmPattern[beatIndex];
+
+            const moras = getMoraChunks(currentWordObj.word);
+            moras.forEach((_, idx) => {
+                const el = document.getElementById(`mora-char-${idx}`);
+                if (el) el.classList.remove('mora-highlight');
+            });
+
+            currentRhythmPattern.forEach((_, idx) => {
+                const circle = document.getElementById(`beat-circle-${idx}`);
+                if (circle) {
+                    if (idx === beatIndex) {
+                        circle.classList.add('scale-125', 'ring-4', 'ring-orange-300');
+                    } else {
+                        circle.classList.remove('scale-125', 'ring-4', 'ring-orange-300');
+                    }
+                }
+            });
+
+            if (val === 1) {
+                playCircleSound();
+                if (beatIndex < moras.length) {
+                    const activeChar = document.getElementById(`mora-char-${beatIndex}`);
+                    if (activeChar) activeChar.classList.add('mora-highlight');
+
+                    if (isOtehon && isVoiceEnabled && 'speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                        const uttr = new SpeechSynthesisUtterance(moras[beatIndex]);
+                        uttr.lang = 'ja-JP';
+                        uttr.rate = 1.1;
+                        window.speechSynthesis.speak(uttr);
+                    }
+                }
+            } else {
+                playRestSound();
+            }
+
+            beatIndex++;
+            if (beatIndex >= currentRhythmPattern.length) {
+                beatIndex = 0;
+                practiceStep++;
+                
+                if (practiceStep >= 4) {
+                    clearInterval(timerId);
+                    currentWordIndexInSession++;
+
+                    if (currentWordIndexInSession < 3) {
+                        setTimeout(() => {
+                            startSingleWordPractice();
+                        }, 600);
+                    } else {
+                        setTimeout(() => {
+                            setupAndStartQuiz();
+                        }, 800);
+                    }
+                } else {
+                    updateTurnBadge();
+                }
+            }
+        }
+
+        function setupAndStartQuiz() {
+            clearInterval(timerId);
+            clearInterval(quizTimerId);
+            playQuizStartSound();
+
+            quizChoices = [...current3Words];
+            selectedQuizCardIndex = null;
+
+            const catCounts = {};
+            current3Words.forEach(w => {
+                catCounts[w.category] = (catCounts[w.category] || 0) + 1;
+            });
+
+            let majorityCategory = null;
+            Object.keys(catCounts).forEach(cat => {
+                if (catCounts[cat] === 2) majorityCategory = cat;
+            });
+
+            const qText = document.getElementById('quiz-question-text');
+
+            if (majorityCategory) {
+                qText.innerText = `「${majorityCategory}」の なかまじゃないのは どれ？`;
+                correctQuizCardIndex = quizChoices.findIndex(item => item.category !== majorityCategory);
+            } else {
+                const targetObj = current3Words[Math.floor(Math.random() * current3Words.length)];
+                qText.innerText = `「${targetObj.category}」の なかまは どれ？`;
+                correctQuizCardIndex = quizChoices.findIndex(item => item.category === targetObj.category);
+            }
+
+            const container = document.getElementById('quiz-cards-container');
+            container.innerHTML = '';
+
+            quizChoices.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.id = `quiz-card-${idx}`;
+                card.onclick = () => selectQuizCard(idx);
+                card.className = `quiz-card bg-white rounded-3xl p-4 border-4 border-sky-300 shadow-lg flex flex-col items-center justify-between cursor-pointer h-full min-h-[22cqw] transition-all duration-200`;
+
+                card.innerHTML = `
+                    <div class="w-[12cqw] h-[12cqw] flex items-center justify-center my-auto text-[8cqw]">
+                        ${getSimpleIllustrationSvg(item)}
+                    </div>
+                    <div class="text-[3cqw] font-black textbook-font text-slate-800 text-center leading-none mt-2">
+                        ${item.word}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('btn-replay').classList.add('hidden');
+            showScreen('screen-quiz');
+            startQuizTimer();
+        }
+
+        function startQuizTimer() {
+            quizCountdown = 5;
+            const badge = document.getElementById('quiz-countdown-badge');
+            badge.innerText = quizCountdown;
+
+            quizTimerId = setInterval(() => {
+                quizCountdown--;
+                if (quizCountdown >= 0) {
+                    badge.innerText = quizCountdown;
+                    playCountdownTickSound(quizCountdown === 0);
+                }
+
+                if (quizCountdown <= 0) {
+                    clearInterval(quizTimerId);
+                    onQuizTimeUp();
+                }
+            }, 1000);
+        }
+
+        function selectQuizCard(idx) {
+            if (quizCountdown <= 0) return;
+            selectedQuizCardIndex = idx;
+
+            quizChoices.forEach((_, i) => {
+                const card = document.getElementById(`quiz-card-${i}`);
+                if (!card) return;
+                if (i === idx) {
+                    card.className = `quiz-card bg-lime-100 rounded-3xl p-4 border-4 border-emerald-500 shadow-xl flex flex-col items-center justify-between cursor-pointer h-full min-h-[22cqw] transition-all duration-200 transform scale-102`;
+                } else {
+                    card.className = `quiz-card bg-white rounded-3xl p-4 border-4 border-sky-300 shadow-lg flex flex-col items-center justify-between cursor-pointer h-full min-h-[22cqw] transition-all duration-200 opacity-80`;
+                }
+            });
+        }
+
+        function onQuizTimeUp() {
+            playAnswerRevealSound();
+
+            quizChoices.forEach((_, i) => {
+                const card = document.getElementById(`quiz-card-${i}`);
+                if (!card) return;
+
+                if (i === correctQuizCardIndex) {
+                    card.className = `quiz-card bg-rose-100 rounded-3xl p-4 border-4 border-rose-500 shadow-2xl flex flex-col items-center justify-between h-full min-h-[22cqw] transition-all duration-300 transform scale-105 z-10`;
+                } else {
+                    card.className = `quiz-card bg-slate-100 rounded-3xl p-4 border-4 border-slate-300 shadow flex flex-col items-center justify-between h-full min-h-[22cqw] opacity-40`;
+                }
+            });
+
+            document.getElementById('btn-replay').classList.remove('hidden');
+
+            if (isContinuousMode) {
+                autoAdvanceTimerId = setTimeout(() => {
+                    startNext3WordsSession();
+                }, 3000);
+            }
+        }
+
+        function loadStorageData() {
+            try {
+                const savedDb = localStorage.getItem('katakana_word_db');
+                if (savedDb) wordDatabase = JSON.parse(savedDb);
+                const savedCats = localStorage.getItem('katakana_categories');
+                if (savedCats) categories = JSON.parse(savedCats);
+            } catch(e){}
+        }
+
+        function saveStorageData() {
+            try {
+                localStorage.setItem('katakana_word_db', JSON.stringify(wordDatabase));
+                localStorage.setItem('katakana_categories', JSON.stringify(categories));
+            } catch(e){}
+        }
+
+        function openWordManagerScreen() {
+            loadStorageData();
+            editingWordIndex = null;
+            document.getElementById('form-title').innerText = '➕ あたらしい たんご';
+            document.getElementById('btn-save-word').innerText = 'とうろく する';
+            document.getElementById('input-new-word').value = '';
+            document.getElementById('add-word-message').innerText = '';
+
+            renderCategoryOptions();
+            renderWordManager();
+            showScreen('screen-word-manager');
+        }
+
+        function renderCategoryOptions() {
+            const select = document.getElementById('select-category-1');
+            select.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.innerText = cat;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderWordManager() {
+            document.getElementById('word-count-badge').innerText = wordDatabase.length;
+            const listContainer = document.getElementById('manager-word-list');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+                wordDatabase.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between bg-white px-3 py-2 rounded-xl border-2 border-sky-200 shadow-sm gap-2 hover:border-sky-400 transition';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-2.5 overflow-hidden min-w-0 flex-1">
+                            <div class="w-[3.5cqw] h-[3.5cqw] min-w-[30px] min-h-[30px] text-[2.2cqw] shrink-0 flex items-center justify-center">
+                                ${getSimpleIllustrationSvg(item)}
+                            </div>
+                            <div class="flex flex-col min-w-0 flex-1 justify-center">
+                                <span class="text-[1.7cqw] font-black text-slate-800 textbook-font leading-tight tracking-wide break-words">${item.word}</span>
+                                <span class="inline-block self-start text-[0.95cqw] px-1.5 py-0.5 bg-sky-100 text-sky-700 rounded-md font-bold border border-sky-200 mt-1 leading-none">${item.category}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="editWord(${index})" class="text-sky-600 hover:text-sky-800 font-bold text-[1.2cqw] px-2 py-1 rounded-lg hover:bg-sky-50 transition active:scale-95 cursor-pointer" title="へんしゅう">
+                                ✏️
+                            </button>
+                            <button onclick="deleteWord(${index})" class="text-rose-500 hover:text-rose-700 font-bold text-[1.2cqw] px-2 py-1 rounded-lg hover:bg-rose-50 transition active:scale-95 cursor-pointer" title="さくじょ">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                    listContainer.appendChild(row);
+                });
+            }
+        }
+
+        function saveWordFromManager() {
+            const input = document.getElementById('input-new-word');
+            const categorySelect = document.getElementById('select-category-1');
+            const msg = document.getElementById('add-word-message');
+
+            const val = input.value.trim();
+            if (!val) {
+                msg.innerText = '※たんごを にゅうりょく してください';
+                return;
+            }
+            if (val.length > 8) {
+                msg.innerText = '※8もじ いないで にゅうりょく してください';
+                return;
+            }
+
+            if (editingWordIndex !== null) {
+                wordDatabase[editingWordIndex] = { word: val, category: categorySelect.value };
+                editingWordIndex = null;
+                document.getElementById('form-title').innerText = '➕ あたらしい たんご';
+                document.getElementById('btn-save-word').innerText = 'とうろく する';
+            } else {
+                wordDatabase.push({ word: val, category: categorySelect.value });
+            }
+
+            saveStorageData();
+            input.value = '';
+            msg.innerText = '';
+            renderWordManager();
+        }
+
+        function editWord(index) {
+            editingWordIndex = index;
+            const item = wordDatabase[index];
+            document.getElementById('input-new-word').value = item.word;
+            document.getElementById('select-category-1').value = item.category;
+            document.getElementById('form-title').innerText = '✏️ たんごの へんしゅう';
+            document.getElementById('btn-save-word').innerText = 'こうしん する';
+            document.getElementById('add-word-message').innerText = '';
+        }
+
+        function deleteWord(index) {
+            if (wordDatabase.length <= 3) {
+                const msg = document.getElementById('add-word-message');
+                if (msg) msg.innerText = '※たんごは 3こ いじょう のこしてください';
+                return;
+            }
+            wordDatabase.splice(index, 1);
+            saveStorageData();
+            renderWordManager();
+        }
+
+        function addNewCategory() {
+            const input = document.getElementById('input-new-category');
+            const val = input.value.trim();
+            if (val && !categories.includes(val)) {
+                categories.push(val);
+                saveStorageData();
+                renderCategoryOptions();
+                document.getElementById('select-category-1').value = val;
+                input.value = '';
+            }
+        }
+
+        function resetWordsToDefault() {
+            wordDatabase = [...DEFAULT_WORD_DATABASE];
+            categories = ["どうぶつ", "のりもの", "くだもの", "はな", "ぶんぼうぐ", "どうぐ", "きかい", "おもちゃ", "おかし", "りょうり", "たてもの", "はきもの", "のみもの"];
+            recentWordHistory = [];
+            saveStorageData();
+            renderCategoryOptions();
+            renderWordManager();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStorageData();
+        });
+    </script>
+</body>
+</html>
